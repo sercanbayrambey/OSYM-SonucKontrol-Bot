@@ -2,6 +2,8 @@
 using System;
 using System.Diagnostics;
 using System.Media;
+using System.Net;
+using System.Net.Mail;
 using System.Threading;
 
 namespace OSYMSonucTest
@@ -13,6 +15,7 @@ namespace OSYMSonucTest
         {
             Thread sonucTH = new Thread(CheckWebsite);
             sonucTH.Start();
+
         }
 
 
@@ -53,6 +56,7 @@ namespace OSYMSonucTest
                         myProcess.StartInfo.UseShellExecute = true;
                         myProcess.StartInfo.FileName = url;
                         myProcess.Start();
+                        SendMail("sercanbayrambeyy@gmail.com");
                         Console.ReadKey();
                         break;
                     }
@@ -64,6 +68,30 @@ namespace OSYMSonucTest
                 }
             }
            
+        }
+
+        public static void SendMail(string email)
+        {
+            using (MailMessage mail = new MailMessage())
+            {
+                mail.From = new MailAddress("comporeport@gmail.com");
+                mail.To.Add(email);
+                mail.Subject = "Sonuç Açıklandı!!";
+                mail.Body = "<h1>ÖSYM Sonucu açıklanmıştır. Bizi tercih ettiğiniz için teşekkür ederiz.</h1>";
+                mail.IsBodyHtml = true;
+
+                var smtp = new SmtpClient
+                {
+                    Host = "smtp.gmail.com",
+                    Port = 587,
+                    EnableSsl = true,
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    Credentials = new NetworkCredential("comporeport@gmail.com", "şifre"),
+                    Timeout = 20000
+                };
+
+                smtp.Send(mail);
+            }
         }
     }
 }
